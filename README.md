@@ -103,6 +103,10 @@ HTML 文件 → 正则提取元信息 → 解析 WEFLOW_DATA JSON → 逐条解�
 
 ## 版本日志
 
+### v1.1.0    ----2026.9.14
+- 修复部分聊天记录写入 XLSX 时因内容包含 XML 非法控制字符导致程序崩溃的问题（报错：`cannot be used in worksheets`）
+- 新增 `sanitize_xlsx_value()` 函数，在写入 Excel 前自动过滤 XML 1.0 非法字符，确保兼容性
+
 ### v1.0.0    ----2026.9.14
 - 支持 WeFlow 导出的 HTML 聊天记录转换为 TXT 和 XLSX
 - 支持消息分类：文本、图片、引用、通话、表情、系统、链接等

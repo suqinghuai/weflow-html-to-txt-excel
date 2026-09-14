@@ -285,6 +285,17 @@ def write_txt(filepath, data):
             f.write('\n')
 
 
+ILLEGAL_XML_CHARS_RE = re.compile(
+    r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x84\x86-\x9f]'
+)
+
+
+def sanitize_xlsx_value(value):
+    if isinstance(value, str):
+        return ILLEGAL_XML_CHARS_RE.sub('', value)
+    return value
+
+
 def write_xlsx(filepath, data):
     from openpyxl import Workbook
     from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
@@ -309,9 +320,9 @@ def write_xlsx(filepath, data):
     ws['A1'].alignment = center_align
 
     ws['A2'] = '微信ID'
-    ws['B2'] = data['other_wxid']
+    ws['B2'] = sanitize_xlsx_value(data['other_wxid'])
     ws['D2'] = '昵称'
-    ws['E2'] = data['account_nickname']
+    ws['E2'] = sanitize_xlsx_value(data['account_nickname'])
     for cell in [ws['A2'], ws['D2']]:
         cell.font = header_font
 
@@ -337,7 +348,7 @@ def write_xlsx(filepath, data):
     for row_idx, msg in enumerate(data['messages'], 5):
         values = [msg['index'], msg['time'], msg['sender'], msg['msg_type'], msg['xlsx_content']]
         for col_idx, value in enumerate(values, 1):
-            cell = ws.cell(row=row_idx, column=col_idx, value=value)
+            cell = ws.cell(row=row_idx, column=col_idx, value=sanitize_xlsx_value(value))
             cell.border = thin_border
             if col_idx == 1:
                 cell.alignment = center_align
